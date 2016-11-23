@@ -1,0 +1,22 @@
+Package: colf
+Type: Package
+Title: Constraint Optimization on Linear Function
+Version: 0.1.1
+Authors@R: person("Theo", 
+                  "Boutaris", 
+                  email = "teoboot2007@hotmail.com", 
+                  role = c("aut", "cre", "cph"))
+URL: https://github.com/LyzandeR/colf                
+BugReports: https://github.com/LyzandeR/colf/issues
+Depends: R (>= 3.2.0),
+         nlmrt
+Imports: stats
+Description: A package used to perform constraint optimization on a linear function. It contains
+    a number of algorithms to choose from and offers a formula syntax similar to lm.
+License: MIT + file LICENSE
+LazyData: TRUE
+RoxygenNote: 5.0.1
+Suggests: testthat,
+          knitr,
+          rmarkdown
+VignetteBuilder: knitr
