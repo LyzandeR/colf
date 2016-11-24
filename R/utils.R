@@ -19,3 +19,15 @@ rhs_formula <- function(vars) {
  rhs_form
  
 }
+
+residuals.colf_nlxb <- function(object, ...) {
+ 
+ object$resid
+ 
+}
+
+fitted.colf_nlxb <- function(object, ...) {
+ 
+ predict.colf_nlxb(object, object$data)
+ 
+}

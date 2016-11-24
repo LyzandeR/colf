@@ -1,3 +1,38 @@
+#' Construct an nls-compatible formula from an lm style formula
+#'
+#' Construct an nls-compatible formula from an lm style formula
+#'
+#' \code{construct_formula} creates the parameters needed for the formula to be compatible with nls
+#' style functions.
+#' 
+#' \code{construct_formula} will make syntactically valid names (if applicable) otherwise the 
+#' optimizers will fail. To make these names \code{make.names} is used. Check examples.
+#'
+#' @inheritParams colf_nlxb
+#'
+#' @return A list of three elements:
+#' \itemize{
+#'   \item model_formula - An nls compatible formula
+#'   \item model_data - The modelling set created (inlcuding dummy variables, if any)
+#'   \item x_param_names - The names of the parameters
+#' 
+#' }
+#' 
+#' @examples 
+#' #simple syntax
+#' construct_formula(mpg ~ hp + cyl, mtcars)
+#' 
+#' #example of make.names to create syntactically valid names
+#' make.names('(foo/^@bar)')
+#' 
+#' #function will create syntactically valid names (if applicable) 
+#' #otherwise the optimizers will fail
+#' construct_formula(mpg ~ I(hp + cyl), mtcars)
+#' construct_formula(mpg ~ (hp + cyl + disp)^3, mtcars)
+#' 
+#' @seealso \link[stats]{nls}, \link{make.names}
+#'
+#' @export
 construct_formula <- function(formula, data) {
  
  #model frame of data
