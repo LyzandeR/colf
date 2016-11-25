@@ -32,25 +32,6 @@ predict.colf_nls <- function(object, newdata, ...) {
  y <- all.vars(formula)[1]
  newdata[[y]] <- 0
  
- # #xnames
- # x_names <- names(object$colclasses)
- 
- # #error if columns do not exist 
- # if (!all(x_names %in% names(newdata))) {
- #  not_exist <- x_names[!x_names %in% names(newdata)]
- #  stop(paste(paste(not_exist, collapse = ', '), ' must be present in newdata'))
- # }
- # 
- # #or classes are not the same
- # if (!identical(sapply(newdata[x_names], class), object$colclasses)) {
- #  new_classes <- sapply(newdata[x_names], class)
- #  miss <- x_names[unlist(lapply(1:length(x_names), function(i)  {
- #   new_classes[i] != object$colclasses[i]
- #  }))]
- #  stop(paste(paste(miss, collapse = ', '), ' must have the same class between newdata and 
- #             original'))
- # }
- 
  #construct nls compatible formula
  b <- construct_formula(formula, newdata)
  
