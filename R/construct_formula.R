@@ -3,7 +3,7 @@
 #' Construct an nls-compatible formula from an lm style formula
 #'
 #' \code{construct_formula} creates the parameters needed for the formula to be compatible with nls
-#' style functions.
+#' style functions. It also creates and returns the modelling set.
 #' 
 #' \code{construct_formula} will make syntactically valid names (if applicable) otherwise the 
 #' optimizers will fail. To make these names \code{make.names} is used. Check examples.
