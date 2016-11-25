@@ -71,13 +71,14 @@ colf_nls <- function(formula, data, start = NULL, trace = FALSE,
                 control = control,
                 lower = lower,
                 upper = upper,
+                algorithm = 'port',
                 ...)
  
  #include initial formula in the output
  nls_mod$formula <- formula
  
- #include column classes in the ouput
- nls_mod$colclasses <- vapply(data[labels(terms(formula))], class, FUN.VALUE = character(1))
+ #add the data as well
+ nls_mod$model_data <- data
  
  #add class
  class(nls_mod) <- c('colf_nls', 'nls')

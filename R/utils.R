@@ -28,6 +28,6 @@ residuals.colf_nlxb <- function(object, ...) {
 
 fitted.colf_nlxb <- function(object, ...) {
  
- predict.colf_nlxb(object, object$data)
+ predict.colf_nlxb(object, object$model_data)
  
 }

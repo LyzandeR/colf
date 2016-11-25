@@ -32,17 +32,24 @@ predict.colf_nls <- function(object, newdata, ...) {
  y <- all.vars(formula)[1]
  newdata[[y]] <- 0
  
- #xnames
- x_names <- labels(terms(formula))
+ # #xnames
+ # x_names <- names(object$colclasses)
  
- if (all(!x_names %in% names(newdata))) {
-  stop(paste(paste(x_names, collapse = ', ')), ' do not exist in newdata')
- }
- 
- if (identical(class(newdata[x_names]), object$colclasses)) {
-  stop(paste(paste(x_names, collapse = ', ')), ' do not have the same
-       classes between newdata and original data')
- }
+ # #error if columns do not exist 
+ # if (!all(x_names %in% names(newdata))) {
+ #  not_exist <- x_names[!x_names %in% names(newdata)]
+ #  stop(paste(paste(not_exist, collapse = ', '), ' must be present in newdata'))
+ # }
+ # 
+ # #or classes are not the same
+ # if (!identical(sapply(newdata[x_names], class), object$colclasses)) {
+ #  new_classes <- sapply(newdata[x_names], class)
+ #  miss <- x_names[unlist(lapply(1:length(x_names), function(i)  {
+ #   new_classes[i] != object$colclasses[i]
+ #  }))]
+ #  stop(paste(paste(miss, collapse = ', '), ' must have the same class between newdata and 
+ #             original'))
+ # }
  
  #construct nls compatible formula
  b <- construct_formula(formula, newdata)
@@ -51,7 +58,10 @@ predict.colf_nls <- function(object, newdata, ...) {
  b$model_data[[y]] <- NULL
  
  #the sum of each row is a pred
- row_calc <- Map('*', b$model_data, unname(coef(object)))
+ row_calc <- tryCatch(Map('*', b$model_data, unname(coef(object))),
+                      warning = function(e) {
+                       stop('newdata column classes need to be the same as original data')
+                      })
  
  #convert to data.frame
  rowSums(data.frame(row_calc))

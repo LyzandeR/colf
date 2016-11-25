@@ -116,11 +116,8 @@ colf_nlxb <- function(formula, data, start = NULL, trace = FALSE, lower = -Inf, 
  #include initial formula in the output
  nlxb_mod$formula <- formula
  
- #include column classes in the ouput
- nlxb_mod$colclasses <- vapply(data[labels(terms(formula))], class, FUN.VALUE = character(1))
- 
  #add the data as well
- nlxb_mod$data <- data
+ nlxb_mod$model_data <- data
  
  #add class
  class(nlxb_mod) <- c('colf_nlxb', 'nlmrt')

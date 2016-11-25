@@ -5,10 +5,7 @@ test_that('function colf_nlxb works properly', {
  #works without failing if right arguments
  expect_error(mod_num <- colf_nlxb(mpg ~ cyl + disp, mtcars),
               NA)
- 
- #make sure data classes and formula are provided
- expect_true(!is.null(mod_num$formula) & !is.null(mod_num$colclasses))
- 
+
  #expect number of coefficients 3
  expect_equal(length(coef(mod_num)), 3L)
  
@@ -38,5 +35,82 @@ test_that('function colf_nlxb works properly', {
  expect_error(resid(mod_cat), NA)
  expect_error(fitted(mod_cat), NA)
  
+ #variations of formula
+ expect_error(mod_num <- colf_nlxb(mpg ~ ., mtcars),
+              NA)
+ 
+ expect_error(mod_num <- colf_nlxb(mpg ~ I(hp + cyl), mtcars),
+              NA)
+ 
+ expect_error(mod_num <- colf_nlxb(mpg ~ (hp + cyl + disp)^3, mtcars),
+              NA)
+ 
+ expect_error(mod_num <- colf_nlxb(mpg ~ hp:cyl, mtcars),
+              NA)
+ 
+ expect_error(mod_num <- colf_nlxb(mpg ~ hp * cyl, mtcars),
+              NA)
+ 
+ #lower and upper work
+ expect_error(mod_num <- colf_nlxb(mpg ~ ., mtcars, upper = rep(2, 11), lower = rep(-0.5, 11)),
+              NA)
+ 
+ #start works with valid start values
+ expect_error(mod_num <- colf_nlxb(mpg ~ ., mtcars, 
+                                   upper = rep(2, 11), 
+                                   lower = rep(-0.5, 11),
+                                   start = rep(0.5, 11)),
+              NA)
+ 
+ #start fails if start values out of bounds
+ expect_error(mod_num <- colf_nlxb(mpg ~ ., mtcars, 
+                                   upper = rep(2, 11), 
+                                   lower = rep(-0.5, 11),
+                                   start = rep(5, 11)))
+ 
+ 
+ #predict fails because hp could not be found
+ expect_error({
+  
+  mod_num <- colf_nlxb(mpg ~ cyl + disp, mtcars)
+  
+  mtcars2 <- mtcars[c('cyl', 'hp')]
+  
+  predict(mod_num, mtcars2)
+ })
+ 
+ #predict fails because classes are different
+ expect_error({
+  
+  mod_num <- colf_nlxb(mpg ~ cyl + disp, mtcars)
+  
+  mtcars2 <- mtcars[c('cyl', 'disp')]
+  
+  mtcars2$disp <- as.character(mtcars2$disp)
+  
+  predict(mod_num, mtcars2)
+ })
+ 
+ #make sure variation predictions work
+ expect_error({
+  
+  mod_num <- colf_nlxb(mpg ~ I(cyl + disp), mtcars)
+  
+  mtcars2 <- mtcars[c('disp', 'cyl')]
+  
+  predict(mod_num, mtcars2)
+ },
+ NA)
+ 
+ #make sure variation predictions work
+ expect_error({
+  
+  mod_num <- colf_nlxb(mpg ~ (cyl + disp)^2, mtcars)
+  
+  mtcars2 <- mtcars[c('disp', 'cyl')]
+  
+  predict(mod_num, mtcars2)
+ },
+ NA)
  
 })
