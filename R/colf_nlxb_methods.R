@@ -49,14 +49,14 @@ residuals.colf_nlxb <- function(object, ...) {
 
 
 #' Fitted values for colf_nlxb
-#'
+#' 
 #' Fitted values for colf_nlxb
 #'
 #' @param object A colf_nlxb object i.e. the result of running \code{colf_nlxb}
 #' 
 #' @param ... Currently not used
 #'
-#' @return A vector with the fitted values
+#' @return  A vector with the fitted values
 #' 
 #' @examples 
 #' mymod <- colf_nlxb(mpg ~ hp + cyl, mtcars)
@@ -70,6 +70,8 @@ fitted.colf_nlxb <- function(object, ...) {
  predict.colf_nlxb(object, object$model_data)
  
 }
+
+
 
 #' Coefficients for colf_nlxb
 #'
@@ -88,9 +90,9 @@ fitted.colf_nlxb <- function(object, ...) {
 #' coef(mymod)
 #'
 #' @export
-fitted.colf_nlxb <- function(object, ...) {
+coef.colf_nlxb <- function(object, ...) {
  
- coefficients <- coef(object)
+ coefficients <- object$coefficients
  coefficients
  
 }

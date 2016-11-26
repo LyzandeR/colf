@@ -55,7 +55,7 @@ the starting values via the `start` argument.
 #### Usage
 
 ```{R}
-library(colf)
+devtools::load_all()
 mymod <- colf_nls(mpg ~ cyl + disp + hp + qsec, mtcars, lower = rep(-2, 5), upper = rep(2, 5))
 ```
 

@@ -95,7 +95,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>In the model below we use 4 variables to estimate mpg which means we will have 5 parameter estimates (don’t forget the Intercept). Parameters are prefixed with <code>param_</code> in the formula. We set the lower bounds of those 4 parameter estimates to -2 and the upper bounds to 2 (obviously they do not need to be the same). Ideally, starting values should be provided. If omitted a cheap guess will be made, which is basically setting all starting values to 1. If the staring values do not fall within the boundaries then an error will be returned and you would need to manually change the starting values via the <code>start</code> argument.</p>
 <div id="usage" class="section level4">
 <h4>Usage</h4>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(colf)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">load_all</span>()</code></pre></div>
+<pre><code>## Loading colf</code></pre>
 <pre><code>## Loading required package: nlmrt</code></pre>
 <pre><code>## Warning: package 'nlmrt' was built under R version 3.3.2</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mymod &lt;-<span class="st"> </span><span class="kw">colf_nls</span>(mpg ~<span class="st"> </span>cyl +<span class="st"> </span>disp +<span class="st"> </span>hp +<span class="st"> </span>qsec, mtcars, <span class="dt">lower =</span> <span class="kw">rep</span>(-<span class="dv">2</span>, <span class="dv">5</span>), <span class="dt">upper =</span> <span class="kw">rep</span>(<span class="dv">2</span>, <span class="dv">5</span>))</code></pre></div>
@@ -391,9 +392,59 @@ newdata2$cyl &lt;-<span class="st"> </span><span class="kw">as.character</span>(
 <span class="kw">predict</span>(mymod, newdata2)</code></pre></div>
 <pre><code>## Error in value[[3L]](cond): newdata column classes need to be the same as original data</code></pre>
 <p>Rest of methods provided:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(mymod)
-<span class="kw">summary</span>(mymod)
-<span class="kw">print</span>(mymod)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(mymod)</code></pre></div>
+<pre><code>## param_X.Intercept.          param_cyl         param_disp 
+##           2.000000          -2.000000           0.038586 
+##           param_hp         param_qsec 
+##           0.002320           1.189077</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(mymod)</code></pre></div>
+<pre><code>## $resname
+## [1] &quot;mymod&quot;
+## 
+## $ssquares
+## [1] 1505
+## 
+## $nobs
+## [1] 32
+## 
+## $coeff
+## param_X.Intercept.          param_cyl         param_disp 
+##           2.000000          -2.000000           0.038586 
+##           param_hp         param_qsec 
+##           0.002320           1.189077 
+## 
+## $ct
+## [1] &quot;U&quot; &quot;L&quot; &quot; &quot; &quot; &quot; &quot; &quot;
+## 
+## $mt
+## [1] &quot; &quot; &quot; &quot; &quot; &quot; &quot; &quot; &quot; &quot;
+## 
+## $SEs
+## [1] NA NA NA NA NA
+## 
+## $tstat
+## [1] NA NA NA NA NA
+## 
+## $pval
+## [1] NA NA NA NA NA
+## 
+## $Sd
+## [1] 1.7236e+03 2.2588e+02 4.8424e+01 3.2482e-01 1.9079e-14
+## 
+## $gr
+##                           [,1]
+## param_X.Intercept.  3.1092e-02
+## param_cyl           0.0000e+00
+## param_disp          2.2571e+04
+## param_hp            8.8068e+03
+## param_qsec         -2.5675e+01
+## 
+## $jeval
+## [1] 7
+## 
+## $feval
+## [1] 7</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(mymod)</code></pre></div>
 <pre><code>## nlmrt class object: x 
 ## residual sumsquares =  1505  on  32 observations
 ##     after  7    Jacobian and  7 function evaluations
@@ -404,9 +455,51 @@ newdata2$cyl &lt;-<span class="st"> </span><span class="kw">as.character</span>(
 ## param_hp      0.00231996            NA         NA         NA        8807      0.3248  
 ## param_qsec       1.18908            NA         NA         NA      -25.67   1.908e-14</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">resid</span>(mymod)</code></pre></div>
-<pre><code>## NULL</code></pre>
+<pre><code>##           Mazda RX4       Mazda RX4 Wag          Datsun 710 
+##            -4.99876            -4.33287            -2.28818 
+##      Hornet 4 Drive   Hornet Sportabout             Valiant 
+##             1.92617             1.83522             4.86870 
+##          Duster 360           Merc 240D            Merc 230 
+##             4.99451            -0.81398             4.08324 
+##            Merc 280           Merc 280C          Merc 450SE 
+##            -0.68744             1.42601             1.34969 
+##          Merc 450SL         Merc 450SLC  Cadillac Fleetwood 
+##             0.68750             3.26314            15.66802 
+## Lincoln Continental   Chrysler Imperial            Fiat 128 
+##            15.03793             9.52537           -12.05880 
+##         Honda Civic      Toyota Corolla       Toyota Corona 
+##           -11.33666           -13.34307             1.15271 
+##    Dodge Challenger         AMC Javelin          Camaro Z28 
+##             3.17823             3.44932             5.09734 
+##    Pontiac Firebird           Fiat X1-9       Porsche 914-2 
+##             2.91435            -7.62499            -7.28934 
+##        Lotus Europa      Ford Pantera L        Ferrari Dino 
+##           -12.37287             1.59795            -5.26827 
+##       Maserati Bora          Volvo 142E 
+##             0.75225            -0.36133</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">fitted</span>(mymod)</code></pre></div>
-<pre><code>## NULL</code></pre>
+<pre><code>##           Mazda RX4       Mazda RX4 Wag          Datsun 710 
+##              16.001              16.667              20.512 
+##      Hornet 4 Drive   Hornet Sportabout             Valiant 
+##              23.326              20.535              22.969 
+##          Duster 360           Merc 240D            Merc 230 
+##              19.295              23.586              26.883 
+##            Merc 280           Merc 280C          Merc 450SE 
+##              18.513              19.226              17.750 
+##          Merc 450SL         Merc 450SLC  Cadillac Fleetwood 
+##              17.988              18.463              26.068 
+## Lincoln Continental   Chrysler Imperial            Fiat 128 
+##              25.438              24.225              20.341 
+##         Honda Civic      Toyota Corolla       Toyota Corona 
+##              19.063              20.557              22.653 
+##    Dodge Challenger         AMC Javelin          Camaro Z28 
+##              18.678              18.649              18.397 
+##    Pontiac Firebird           Fiat X1-9       Porsche 914-2 
+##              22.114              19.675              18.711 
+##        Lotus Europa      Ford Pantera L        Ferrari Dino 
+##              18.027              17.398              14.432 
+##       Maserati Bora          Volvo 142E 
+##              15.752              21.039</code></pre>
 </div>
 </div>
 
