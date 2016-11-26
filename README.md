@@ -23,7 +23,7 @@ By typing on your console:
 
 ```R
 library(colf)
-colf_nls(mpg ~ ., mtcars, upper = rep(2, 11), lower = rep(-0.5, 11)
+colf_nls(mpg ~ ., mtcars, upper = rep(2, 11), lower = rep(-0.5, 11))
 ```
 
 you can see a first example of how to run a constrained optimization on a linear objective function!

@@ -23,14 +23,14 @@ $$\hat{\beta} = arg_\beta min \ S(\beta)$$
 
 
 The idea behind the package is to give the users a way to perform a constrained "linear regression"
-in an easy and intuitive way. The functions require a formula in the same way and format as `lm` which
-is a style most R users are familiar with.
+in an easy and intuitive way. The functions require a formula in the same syntax and format as `lm` 
+which is a style most R users are familiar with.
 
 So far the package includes two functions in order to perform the constrained optimization:
   
-* colf_nls - uses the port algorithm which comes from the `stats::nls` function.
-* colf_nlxb - uses Nash's variant of Marquardt nonlinear least squares solution which comes from the 
-  `nlmrt::nlxb` function.
+* `colf_nls` - uses the port algorithm which comes from the `stats::nls` function.
+* `colf_nlxb` - uses Nash's variant of Marquardt nonlinear least squares solution which comes from 
+  the `nlmrt::nlxb` function.
 
 You can find more details about the two algorithms if you have a look at `?nls` and `?nlxb` 
 respectively.
@@ -42,21 +42,22 @@ will see we are using `colf_nls` in the same way we would use `lm` with the addi
 lower bounds for our parameter estimates.
 
 We will use the `mtcars` data set for a demonstration. Let's load the package and use `mtcars` to 
-run a constrained least squares optimization problem.
+run a constrained least squares optimization model.
 
-In the model below we use 4 variables to estimate mpg which means we will have 5 parameter 
-estimates (don't forget the Intercept). Parameters are prefixed with `param_` in the formula. We 
-set the lower bounds of those 4 parameter estimates to -2 and the upper bounds to 2 
+In the model below we use 4 variables to model mpg which means we will have 5 parameter 
+estimates (don't forget the Intercept). Parameters are prefixed with `param_` in the model's output. 
+We set the lower bounds of those 4 parameter estimates to -2 and the upper bounds to 2 
 (obviously they do not need to be the same). Ideally, starting values should be provided. If omitted 
 a cheap guess will be made, which is basically setting all starting values to 1. If the staring values
-do not fall within the boundaries then an error will be returned and you would need to manually change 
-the starting values via the `start` argument.
+do not fall within the boundaries defined by lower and upper then an error will be returned and you 
+would need to manually change the starting values via the `start` argument.
 
 #### Usage
 
 ```{R}
 library(colf)
 mymod <- colf_nls(mpg ~ cyl + disp + hp + qsec, mtcars, lower = rep(-2, 5), upper = rep(2, 5))
+mymod
 ```
 
 As you can see all 5 parameter estimates fall within the defined boundaries. The above provided 
@@ -141,9 +142,22 @@ predict(mymod, newdata2)
 
 The rest of the `colf_nls` methods are demonstrated below:
 
+You need to be careful when using `summary` because it returns p-values. By default `nls` and 
+`nlxb` both return p-values for the coefficients, which were naturally passed on to colf. When
+running an unconstrained regression the p-values show us how likely it is for the estimate to be 
+zero. In constrained regression though this may not even hold if you think that a restriction (and
+actually a common one) is to force the coefficients to be positive. In such a case the hypothesis
+test does not hold at all since we have restricted the coefficients to be positive. In constrained
+regression other assumptions that we make in unconstrained regression do not hold either (like 
+the coefficients' distribution) so the use and interpretation of the p-values can be problematic
+when we set lower and/or upper.
+
+```{R}
+summary(mymod)
+```
+
 ```{R}
 coef(mymod)
-summary(mymod)
 print(mymod)
 resid(mymod)
 fitted(mymod)
@@ -158,16 +172,19 @@ fitted(mymod)
 
 ```{R}
 mymod <- colf_nlxb(mpg ~ cyl + disp + hp + qsec, mtcars, lower = rep(-2, 5), upper = rep(2, 5))
+mymod
 ```
 
 Setting lower, upper and starting values:
 
 ```{R, error = TRUE}
+#start values are outside boundaries
 colf_nlxb(mpg ~ cyl + disp + hp + qsec, mtcars, lower = rep(-2, 5), upper = rep(0.5, 5))
 ```
 
 ```{R}
-colf_nlxb(mpg ~ cyl + disp + hp + qsec, mtcars, lower = rep(-2, 5), upper = rep(0.5, 5), 
+#so they need to be provided
+colf_nlxb(mpg ~ cyl + disp + hp + qsec, mtcars, lower = rep(-5, 5), upper = rep(.5, 5), 
          start = rep(0, 5))
 ```
 
@@ -207,9 +224,15 @@ predict(mymod, newdata2)
 
 Rest of methods provided:
 
+Please make sure you read the section about the interpretation of the p-values at `colf_nls` when
+running a constrained regression. The same principles described there hold for `colf_nlxb`.
+
+```{R}
+summary(mymod)
+```
+
 ```{R}
 coef(mymod)
-summary(mymod)
 print(mymod)
 resid(mymod)
 fitted(mymod)

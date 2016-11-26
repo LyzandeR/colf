@@ -80,26 +80,36 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p><span class="math display">\[S(\beta) = \sum_{i=1}^m \vert y_i - \sum_{j=1}^nX_{ij}\beta_j \vert^2 = \Vert y - X\beta\Vert^2\]</span></p>
 <p>And</p>
 <p><span class="math display">\[\hat{\beta} = arg_\beta min \ S(\beta)\]</span></p>
-<p>The idea behind the package is to give the users a way to perform a constrained “linear regression” in an easy and intuitive way. The functions require a formula in the same way and format as <code>lm</code> which is a style most R users are familiar with.</p>
+<p>The idea behind the package is to give the users a way to perform a constrained “linear regression” in an easy and intuitive way. The functions require a formula in the same syntax and format as <code>lm</code> which is a style most R users are familiar with.</p>
 <p>So far the package includes two functions in order to perform the constrained optimization:</p>
 <ul>
-<li>colf_nls - uses the port algorithm which comes from the <code>stats::nls</code> function.</li>
-<li>colf_nlxb - uses Nash’s variant of Marquardt nonlinear least squares solution which comes from the <code>nlmrt::nlxb</code> function.</li>
+<li><code>colf_nls</code> - uses the port algorithm which comes from the <code>stats::nls</code> function.</li>
+<li><code>colf_nlxb</code> - uses Nash’s variant of Marquardt nonlinear least squares solution which comes from the <code>nlmrt::nlxb</code> function.</li>
 </ul>
 <p>You can find more details about the two algorithms if you have a look at <code>?nls</code> and <code>?nlxb</code> respectively.</p>
 </div>
 <div id="colf_nls" class="section level2">
 <h2>colf_nls</h2>
 <p>Now we will see how we can easily use the port algorithm to perform a constrained optimization. As you will see we are using <code>colf_nls</code> in the same way we would use <code>lm</code> with the addition of upper and lower bounds for our parameter estimates.</p>
-<p>We will use the <code>mtcars</code> data set for a demonstration. Let’s load the package and use <code>mtcars</code> to run a constrained least squares optimization problem.</p>
-<p>In the model below we use 4 variables to estimate mpg which means we will have 5 parameter estimates (don’t forget the Intercept). Parameters are prefixed with <code>param_</code> in the formula. We set the lower bounds of those 4 parameter estimates to -2 and the upper bounds to 2 (obviously they do not need to be the same). Ideally, starting values should be provided. If omitted a cheap guess will be made, which is basically setting all starting values to 1. If the staring values do not fall within the boundaries then an error will be returned and you would need to manually change the starting values via the <code>start</code> argument.</p>
+<p>We will use the <code>mtcars</code> data set for a demonstration. Let’s load the package and use <code>mtcars</code> to run a constrained least squares optimization model.</p>
+<p>In the model below we use 4 variables to model mpg which means we will have 5 parameter estimates (don’t forget the Intercept). Parameters are prefixed with <code>param_</code> in the model’s output. We set the lower bounds of those 4 parameter estimates to -2 and the upper bounds to 2 (obviously they do not need to be the same). Ideally, starting values should be provided. If omitted a cheap guess will be made, which is basically setting all starting values to 1. If the staring values do not fall within the boundaries defined by lower and upper then an error will be returned and you would need to manually change the starting values via the <code>start</code> argument.</p>
 <div id="usage" class="section level4">
 <h4>Usage</h4>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">load_all</span>()</code></pre></div>
-<pre><code>## Loading colf</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(colf)</code></pre></div>
 <pre><code>## Loading required package: nlmrt</code></pre>
 <pre><code>## Warning: package 'nlmrt' was built under R version 3.3.2</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mymod &lt;-<span class="st"> </span><span class="kw">colf_nls</span>(mpg ~<span class="st"> </span>cyl +<span class="st"> </span>disp +<span class="st"> </span>hp +<span class="st"> </span>qsec, mtcars, <span class="dt">lower =</span> <span class="kw">rep</span>(-<span class="dv">2</span>, <span class="dv">5</span>), <span class="dt">upper =</span> <span class="kw">rep</span>(<span class="dv">2</span>, <span class="dv">5</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mymod &lt;-<span class="st"> </span><span class="kw">colf_nls</span>(mpg ~<span class="st"> </span>cyl +<span class="st"> </span>disp +<span class="st"> </span>hp +<span class="st"> </span>qsec, mtcars, <span class="dt">lower =</span> <span class="kw">rep</span>(-<span class="dv">2</span>, <span class="dv">5</span>), <span class="dt">upper =</span> <span class="kw">rep</span>(<span class="dv">2</span>, <span class="dv">5</span>))
+mymod</code></pre></div>
+<pre><code>## Nonlinear regression model
+##   model: mpg ~ param_X.Intercept. * X.Intercept. + param_cyl * cyl + param_disp *     disp + param_hp * hp + param_qsec * qsec
+##    data: model_ingredients$model_data
+## param_X.Intercept.          param_cyl         param_disp 
+##            2.00000            0.23936           -0.03868 
+##           param_hp         param_qsec 
+##            0.01033            1.33915 
+##  residual sum-of-squares: 417.6
+## 
+## Algorithm &quot;port&quot;, convergence message: both X-convergence and relative convergence (5)</code></pre>
 <p>As you can see all 5 parameter estimates fall within the defined boundaries. The above provided formula includes the Intercept. In the output, X.Intercept is a variable set to 1 and param_X.Intercept is the estimated intercept.</p>
 <p>If starting values do not fall within the boundaries an error will be returned. As said previously if not provided they will be set to 1.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colf_nls</span>(mpg ~<span class="st"> </span>cyl +<span class="st"> </span>disp +<span class="st"> </span>hp +<span class="st"> </span>qsec, mtcars, <span class="dt">lower =</span> <span class="kw">rep</span>(-<span class="dv">2</span>, <span class="dv">5</span>), <span class="dt">upper =</span> <span class="kw">rep</span>(<span class="fl">0.5</span>, <span class="dv">5</span>))</code></pre></div>
@@ -230,11 +240,7 @@ newdata2$cyl &lt;-<span class="st"> </span><span class="kw">as.character</span>(
 <span class="kw">predict</span>(mymod, newdata2)</code></pre></div>
 <pre><code>## Error in value[[3L]](cond): newdata column classes need to be the same as original data</code></pre>
 <p>The rest of the <code>colf_nls</code> methods are demonstrated below:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(mymod)</code></pre></div>
-<pre><code>## param_X.Intercept.          param_cyl         param_disp 
-##         2.00000000         0.23936324        -0.03867617 
-##           param_hp         param_qsec 
-##         0.01032870         1.33914623</code></pre>
+<p>You need to be careful when using <code>summary</code> because it returns p-values. By default <code>nls</code> and <code>nlxb</code> both return p-values for the coefficients, which were naturally passed on to colf. When running an unconstrained regression the p-values show us how likely it is for the estimate to be zero. In constrained regression though this may not even hold if you think that a restriction (and actually a common one) is to force the coefficients to be positive. In such a case the hypothesis test does not hold at all since we have restricted the coefficients to be positive. In constrained regression other assumptions that we make in unconstrained regression do not hold either (like the coefficients’ distribution) so the use and interpretation of the p-values can be problematic when we set lower and/or upper.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(mymod)</code></pre></div>
 <pre><code>## 
 ## Formula: mpg ~ param_X.Intercept. * X.Intercept. + param_cyl * cyl + param_disp * 
@@ -253,6 +259,11 @@ newdata2$cyl &lt;-<span class="st"> </span><span class="kw">as.character</span>(
 ## Residual standard error: 3.933 on 27 degrees of freedom
 ## 
 ## Algorithm &quot;port&quot;, convergence message: both X-convergence and relative convergence (5)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(mymod)</code></pre></div>
+<pre><code>## param_X.Intercept.          param_cyl         param_disp 
+##         2.00000000         0.23936324        -0.03867617 
+##           param_hp         param_qsec 
+##         0.01032870         1.33914623</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(mymod)</code></pre></div>
 <pre><code>## Nonlinear regression model
 ##   model: mpg ~ param_X.Intercept. * X.Intercept. + param_cyl * cyl + param_disp *     disp + param_hp * hp + param_qsec * qsec
@@ -288,11 +299,23 @@ newdata2$cyl &lt;-<span class="st"> </span><span class="kw">as.character</span>(
 <p><code>colf_nlxb</code> can be used in the exact same way as <code>colf_nls</code>. All aspects / features discussed about <code>colf_nls</code> do stand for <code>colf_nlxb</code> as well. Only the underlying algorithm changes.</p>
 <div id="usage-1" class="section level4">
 <h4>Usage</h4>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mymod &lt;-<span class="st"> </span><span class="kw">colf_nlxb</span>(mpg ~<span class="st"> </span>cyl +<span class="st"> </span>disp +<span class="st"> </span>hp +<span class="st"> </span>qsec, mtcars, <span class="dt">lower =</span> <span class="kw">rep</span>(-<span class="dv">2</span>, <span class="dv">5</span>), <span class="dt">upper =</span> <span class="kw">rep</span>(<span class="dv">2</span>, <span class="dv">5</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mymod &lt;-<span class="st"> </span><span class="kw">colf_nlxb</span>(mpg ~<span class="st"> </span>cyl +<span class="st"> </span>disp +<span class="st"> </span>hp +<span class="st"> </span>qsec, mtcars, <span class="dt">lower =</span> <span class="kw">rep</span>(-<span class="dv">2</span>, <span class="dv">5</span>), <span class="dt">upper =</span> <span class="kw">rep</span>(<span class="dv">2</span>, <span class="dv">5</span>))
+mymod</code></pre></div>
+<pre><code>## nlmrt class object: x 
+## residual sumsquares =  1505  on  32 observations
+##     after  7    Jacobian and  7 function evaluations
+##   name            coeff          SE       tstat      pval      gradient    JSingval   
+## param_X.Intercept.             2U           NA         NA         NA     0.03109        1724  
+## param_cyl             -2L           NA         NA         NA           0       225.9  
+## param_disp     0.0385865            NA         NA         NA       22571       48.42  
+## param_hp      0.00231996            NA         NA         NA        8807      0.3248  
+## param_qsec       1.18908            NA         NA         NA      -25.67   1.908e-14</code></pre>
 <p>Setting lower, upper and starting values:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colf_nlxb</span>(mpg ~<span class="st"> </span>cyl +<span class="st"> </span>disp +<span class="st"> </span>hp +<span class="st"> </span>qsec, mtcars, <span class="dt">lower =</span> <span class="kw">rep</span>(-<span class="dv">2</span>, <span class="dv">5</span>), <span class="dt">upper =</span> <span class="kw">rep</span>(<span class="fl">0.5</span>, <span class="dv">5</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#start values are outside boundaries</span>
+<span class="kw">colf_nlxb</span>(mpg ~<span class="st"> </span>cyl +<span class="st"> </span>disp +<span class="st"> </span>hp +<span class="st"> </span>qsec, mtcars, <span class="dt">lower =</span> <span class="kw">rep</span>(-<span class="dv">2</span>, <span class="dv">5</span>), <span class="dt">upper =</span> <span class="kw">rep</span>(<span class="fl">0.5</span>, <span class="dv">5</span>))</code></pre></div>
 <pre><code>## Error in nlxb(model_ingredients$model_formula, data = model_ingredients$model_data, : Infeasible start</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colf_nlxb</span>(mpg ~<span class="st"> </span>cyl +<span class="st"> </span>disp +<span class="st"> </span>hp +<span class="st"> </span>qsec, mtcars, <span class="dt">lower =</span> <span class="kw">rep</span>(-<span class="dv">2</span>, <span class="dv">5</span>), <span class="dt">upper =</span> <span class="kw">rep</span>(<span class="fl">0.5</span>, <span class="dv">5</span>), 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#so they need to be provided</span>
+<span class="kw">colf_nlxb</span>(mpg ~<span class="st"> </span>cyl +<span class="st"> </span>disp +<span class="st"> </span>hp +<span class="st"> </span>qsec, mtcars, <span class="dt">lower =</span> <span class="kw">rep</span>(-<span class="dv">5</span>, <span class="dv">5</span>), <span class="dt">upper =</span> <span class="kw">rep</span>(.<span class="dv">5</span>, <span class="dv">5</span>), 
          <span class="dt">start =</span> <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">5</span>))</code></pre></div>
 <pre><code>## nlmrt class object: x 
 ## residual sumsquares =  2237.9  on  32 observations
@@ -392,11 +415,7 @@ newdata2$cyl &lt;-<span class="st"> </span><span class="kw">as.character</span>(
 <span class="kw">predict</span>(mymod, newdata2)</code></pre></div>
 <pre><code>## Error in value[[3L]](cond): newdata column classes need to be the same as original data</code></pre>
 <p>Rest of methods provided:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(mymod)</code></pre></div>
-<pre><code>## param_X.Intercept.          param_cyl         param_disp 
-##           2.000000          -2.000000           0.038586 
-##           param_hp         param_qsec 
-##           0.002320           1.189077</code></pre>
+<p>Please make sure you read the section about the interpretation of the p-values at <code>colf_nls</code> when running a constrained regression. The same principles described there hold for <code>colf_nlxb</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(mymod)</code></pre></div>
 <pre><code>## $resname
 ## [1] &quot;mymod&quot;
@@ -444,6 +463,11 @@ newdata2$cyl &lt;-<span class="st"> </span><span class="kw">as.character</span>(
 ## 
 ## $feval
 ## [1] 7</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(mymod)</code></pre></div>
+<pre><code>## param_X.Intercept.          param_cyl         param_disp 
+##           2.000000          -2.000000           0.038586 
+##           param_hp         param_qsec 
+##           0.002320           1.189077</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(mymod)</code></pre></div>
 <pre><code>## nlmrt class object: x 
 ## residual sumsquares =  1505  on  32 observations
