@@ -9,50 +9,211 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+## colf
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+This is a package dedicated to performing a least squares constrained optimization on a 
+linear objective function. The functions minimize the same objective function as `lm`, applying a
+constraint on the beta parameters:
 
-## Vignette Info
+$$S(\beta) = \sum_{i=1}^m \vert y_i - \sum_{j=1}^nX_{ij}\beta_j \vert^2 = \Vert y - X\beta\Vert^2$$
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+And 
 
-## Styles
+$$\hat{\beta} = arg_\beta min \ S(\beta)$$
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
+The idea behind the package is to give the users a way to perform a constrained "linear regression"
+in an easy and intuitive way. The functions require a formula in the same way and format as `lm` which
+is a style most R users are familiar with.
 
-## Figures
+So far the package includes two functions in order to perform the constrained optimization:
+  
+* colf_nls - uses the port algorithm which comes from the `stats::nls` function.
+* colf_nlxb - uses Nash's variant of Marquardt nonlinear least squares solution which comes from the 
+  `nlmrt::nlxb` function.
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+You can find more details about the two algorithms if you have a look at `?nls` and `?nlxb` 
+respectively.
 
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+## colf_nls
+
+Now we will see how we can easily use the port algorithm to perform a constrained optimization. As you
+will see we are using `colf_nls` in the same way we would use `lm` with the addition of upper and 
+lower bounds for our parameter estimates.
+
+We will use the `mtcars` data set for a demonstration. Let's load the package and use `mtcars` to 
+run a constrained least squares optimization problem.
+
+In the model below we use 4 variables to estimate mpg which means we will have 5 parameter 
+estimates (don't forget the Intercept). Parameters are prefixed with `param_` in the formula. We 
+set the lower bounds of those 4 parameter estimates to -2 and the upper bounds to 2 
+(obviously they do not need to be the same). Ideally, starting values should be provided. If omitted 
+a cheap guess will be made, which is basically setting all starting values to 1. If the staring values
+do not fall within the boundaries then an error will be returned and you would need to manually change 
+the starting values via the `start` argument.
+
+#### Usage
+
+```{R}
+library(colf)
+mymod <- colf_nls(mpg ~ cyl + disp + hp + qsec, mtcars, lower = rep(-2, 5), upper = rep(2, 5))
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
+As you can see all 5 parameter estimates fall within the defined boundaries. The above provided 
+formula includes the Intercept. In the output, X.Intercept is a variable set to 1 and 
+param_X.Intercept is the estimated intercept. 
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+If starting values do not fall within the boundaries an error will be returned. As said previously
+if not provided they will be set to 1.
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+```{R, error = TRUE}
+colf_nls(mpg ~ cyl + disp + hp + qsec, mtcars, lower = rep(-2, 5), upper = rep(0.5, 5))
 ```
 
-Also a quote using `>`:
+So, then they need to be set by the user:
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+```{R}
+colf_nls(mpg ~ cyl + disp + hp + qsec, mtcars, lower = rep(-2, 5), upper = rep(0.5, 5), 
+         start = rep(0, 5))
+```
+
+#### Alternative ways to define the formula
+
+As with `lm`, `colf_nls` accepts the same kind of formula syntax:
+
+```{R}
+#no intercept
+colf_nls(mpg ~ 0 + hp + cyl, mtcars)
+
+colf_nls(mpg ~ ., mtcars)
+
+colf_nls(mpg ~ I(hp + cyl), mtcars)
+
+colf_nls(mpg ~ (hp + cyl + disp)^3, mtcars)
+
+colf_nls(mpg ~ hp:cyl, mtcars)
+
+colf_nls(mpg ~ hp * cyl, mtcars)
+```
+
+Notice that when the above versions are used, the parameter names are created with the use of 
+`make.names` in order to be syntactically valid (otherwise the optimizers fail). This is why you 
+see an 'X.' in front of the intercept or too many dots in the names.
+
+#### Predict and rest of Methods
+
+`colf` provides a number of methods for `colf` objects:
+
+* `predict` - uses parameter estimates to predict on a new data set
+* `coef` - retrieve the coefficients
+* `resid` - retrieve the residuals
+* `print` - print the model
+* `summary` - view a summary of the model
+* `fitted` - retrieve the fitted values
+
+In order to use the parameter estimates to make predictions on a new data set you need to 
+remember two **really important** checks:
+
+* The new data set needs to contain exactly the same column names as the original one
+* The new data set's columns should have exactly the same column classes
+
+If any of the two is not valid, `predict` will fail.
+
+```{R}
+set.seed(10)
+newdata <- data.frame(hp = mtcars$hp, cyl = mtcars$cyl, disp = mtcars$disp, qsec = mtcars$qsec)
+predict(mymod, newdata)
+```
+
+But if I change any of the names or classes `predict` will fail
+
+```{R, error = TRUE}
+#change column name
+newdata2 <- newdata
+names(newdata2)[1] <- 'col1'
+predict(mymod, newdata2)
+
+#change column class
+newdata2 <- newdata
+newdata2$cyl <- as.character(newdata2$cyl)  
+predict(mymod, newdata2)
+```
+
+The rest of the `colf_nls` methods are demonstrated below:
+
+```{R}
+coef(mymod)
+summary(mymod)
+print(mymod)
+resid(mymod)
+fitted(mymod)
+```
+
+## colf_nlxb
+
+`colf_nlxb` can be used in the exact same way as `colf_nls`. All aspects / features discussed about
+`colf_nls` do stand for `colf_nlxb` as well. Only the underlying algorithm changes.
+
+#### Usage
+
+```{R}
+mymod <- colf_nlxb(mpg ~ cyl + disp + hp + qsec, mtcars, lower = rep(-2, 5), upper = rep(2, 5))
+```
+
+Setting lower, upper and starting values:
+
+```{R, error = TRUE}
+colf_nlxb(mpg ~ cyl + disp + hp + qsec, mtcars, lower = rep(-2, 5), upper = rep(0.5, 5))
+```
+
+```{R}
+colf_nlxb(mpg ~ cyl + disp + hp + qsec, mtcars, lower = rep(-2, 5), upper = rep(0.5, 5), 
+         start = rep(0, 5))
+```
+
+#### Alternative ways to use formula, similar to `lm`:
+
+```{R}
+#no intercept
+colf_nlxb(mpg ~ 0 + hp + cyl, mtcars)
+colf_nlxb(mpg ~ ., mtcars)
+colf_nlxb(mpg ~ I(hp + cyl), mtcars)
+colf_nlxb(mpg ~ (hp + cyl + disp)^3, mtcars)
+colf_nlxb(mpg ~ hp:cyl, mtcars)
+colf_nlxb(mpg ~ hp * cyl, mtcars)
+```
+
+#### Predict and rest of the methods
+
+```{R}
+set.seed(10)
+newdata <- data.frame(hp = mtcars$hp, cyl = mtcars$cyl, disp = mtcars$disp, qsec = mtcars$qsec)
+predict(mymod, newdata)
+```
+
+As with `colf_nls`, in `colf_nlxb` keeping names and classes the same is vital:
+
+```{R, error = TRUE}
+#change column name
+newdata2 <- newdata
+names(newdata2)[1] <- 'col1'
+predict(mymod, newdata2)
+
+#change column class
+newdata2 <- newdata
+newdata2$cyl <- as.character(newdata2$cyl)  
+predict(mymod, newdata2)
+```
+
+Rest of methods provided:
+
+```{R}
+coef(mymod)
+summary(mymod)
+print(mymod)
+resid(mymod)
+fitted(mymod)
+```
+
+
+
