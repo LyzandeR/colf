@@ -12,7 +12,7 @@
 
 <meta name="author" content="Theo Boutaris" />
 
-<meta name="date" content="2016-11-26" />
+<meta name="date" content="2016-11-30" />
 
 <title>colf</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">colf</h1>
 <h4 class="author"><em>Theo Boutaris</em></h4>
-<h4 class="date"><em>2016-11-26</em></h4>
+<h4 class="date"><em>2016-11-30</em></h4>
 
 
 
@@ -97,7 +97,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h4>Usage</h4>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(colf)</code></pre></div>
 <pre><code>## Loading required package: nlmrt</code></pre>
-<pre><code>## Warning: package 'nlmrt' was built under R version 3.3.2</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mymod &lt;-<span class="st"> </span><span class="kw">colf_nls</span>(mpg ~<span class="st"> </span>cyl +<span class="st"> </span>disp +<span class="st"> </span>hp +<span class="st"> </span>qsec, mtcars, <span class="dt">lower =</span> <span class="kw">rep</span>(-<span class="dv">2</span>, <span class="dv">5</span>), <span class="dt">upper =</span> <span class="kw">rep</span>(<span class="dv">2</span>, <span class="dv">5</span>))
 mymod</code></pre></div>
 <pre><code>## Nonlinear regression model

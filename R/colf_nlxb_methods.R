@@ -214,13 +214,55 @@ summary.colf_nlxb <- function(object, ...) {
    }
   }
   pval <- 2 * (1 - pt(abs(tstat), df = ndof))
+  data_frame_to_print <- data.frame(pname,
+                                    coeff,
+                                    SEs,
+                                    tstat,
+                                    pval,
+                                    gr,
+                                    Sd)
+  row.names(data_frame_to_print) <- NULL
+  names(data_frame_to_print) <- c('name', 'coeff', 'SEs', 'tstat', 'pval', 'gradient', 'JSingval')
   object <- list(resname = resname, ssquares = ss, nobs = nobs, 
                  coeff = coeff, ct = ct, mt = mt, SEs = SEs, tstat = tstat, 
                  pval = pval, Sd = Sd, gr = gr, jeval = object$jeval, 
-                 feval = object$feval)
+                 feval = object$feval,
+                 data_frame_to_print = data_frame_to_print)
   object
  }
  
 }
 
 
+#' colf_nlxb Print method
+#'
+#' colf_nlxb Print method
+#'
+#' @param x A colf_nlxb object i.e. the result of running \code{colf_nlxb}
+#' 
+#' @param ... Currently not used
+#'
+#' @return Printing the colf_nlxb object
+#' 
+#' @examples 
+#' mymod <- colf_nlxb(mpg ~ hp + cyl, mtcars)
+#' 
+#' #print
+#' print(mymod)
+#'
+#' @export
+print.colf_nlxb <- function(x, ...) {
+ 
+ xx <- summary(x)
+ with(xx, {
+  cat("nlmrt class object:", resname, "\n")
+  pname <- names(coeff)
+  npar <- length(coeff)
+  cat("residual sumsquares = ", ssquares, " on ", nobs, 
+      "observations\n")
+  cat("    after ", jeval, "   Jacobian and ", feval, "function evaluations\n")
+ })
+ print(xx$data_frame_to_print)
+ invisible(x)
+
+}

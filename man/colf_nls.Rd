@@ -2,7 +2,7 @@
 % Please edit documentation in R/colf_nls.R
 \name{colf_nls}
 \alias{colf_nls}
-\title{Non linear Least Squares on Linear Objective Function}
+\title{Non linear Least Squares Optimization on a Linear Objective Function}
 \usage{
 colf_nls(formula, data, start = NULL, trace = FALSE, control = NULL,
   na.action = c("na.omit", "na.fail", "na.exclude"), lower = -Inf,
@@ -21,20 +21,8 @@ consideration as number of categories minus one. See examples and details.}
 \item{trace}{Logical. Defaults to FALSE. Set to TRUE if you want the intermediate progress to be 
 reported}
 
-\item{control}{A list of controls for the algorithm. These are:
-\itemize{
-  \item watch - Monitor progress. Logical, defaults to FALSE
-  \item phi - Adds phi*identity to Jacobian inner product. Defaults to 1.
-  \item lamda - Initial Marquardt adjustment. Defaults to 0.0001.
-  \item offset - Shift to test floating point equality. Defaults to 100.
-  \item laminc - Factor to use to increase lamda. Defaults to 10.
-  \item lamdec - Factor to use to decrease lamda (lamdec / laminc). Defaults to 4.
-  \item femax - Maximum evaluations of sum of squares function. Defaults to 10000.
-  \item jemax - Maximum evaluations of the Jacobian. Defaults to 5000.
-  \item rofftest - Use a termination of the relative offset orthogonality type. 
-  \item smallsstest - Exit the function if the sum of squares falls below 
-  (100 * .Machine$double.eps)^4 times the initial sumsquares. Defaults to TRUE.
-}}
+\item{control}{an optional list of control settings. See nls.control for the names of 
+the settable control values and their effect.}
 
 \item{na.action}{A function which indicates what should happen if NAs are present in the data
 set. Defaults to options('na.action'). na.fail, or na.exclude can be used.}
@@ -51,7 +39,7 @@ applied to all parameters. Defaults to Inf (unconstrained).}
 Same as nls
 }
 \description{
-Non linear least squares using the port algorithm on a linear objective function.
+Non linear least squares optimization using the port algorithm on a linear objective function.
 }
 \details{
 \code{colf_nls} uses nls, in an attempt to find the minimum of the residual sum of squares. 
@@ -89,6 +77,6 @@ colf_nls(Sepal.Length ~ Sepal.Width + Species, iris, lower = rep(0.5, 4))
 
 }
 \seealso{
-\link[stats]{nls}
+\link[stats]{nls}, \link[stats]{nls.control}
 }
 

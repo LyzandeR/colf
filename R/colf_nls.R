@@ -1,6 +1,6 @@
-#' Non linear Least Squares on Linear Objective Function
+#' Non linear Least Squares Optimization on a Linear Objective Function
 #'
-#' Non linear least squares using the port algorithm on a linear objective function.
+#' Non linear least squares optimization using the port algorithm on a linear objective function.
 #'
 #' \code{colf_nls} uses nls, in an attempt to find the minimum of the residual sum of squares. 
 #' The algorithm is applied on a linear objective function.
@@ -17,6 +17,9 @@
 #' account. 
 #' 
 #' @inheritParams colf_nlxb
+#' 
+#' @param control an optional list of control settings. See nls.control for the names of 
+#' the settable control values and their effect.
 #'
 #' @return Same as nls
 #' 
@@ -39,7 +42,7 @@
 #' #the two next for the dummy variables constructed from Species. 
 #' colf_nls(Sepal.Length ~ Sepal.Width + Species, iris, lower = rep(0.5, 4))
 #' 
-#' @seealso \link[stats]{nls}
+#' @seealso \link[stats]{nls}, \link[stats]{nls.control}
 #'
 #' @import stats nlmrt
 #' @export
