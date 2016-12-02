@@ -12,7 +12,7 @@
 
 <meta name="author" content="Theo Boutaris" />
 
-<meta name="date" content="2016-11-30" />
+<meta name="date" content="2016-12-02" />
 
 <title>colf</title>
 
@@ -70,7 +70,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">colf</h1>
 <h4 class="author"><em>Theo Boutaris</em></h4>
-<h4 class="date"><em>2016-11-30</em></h4>
+<h4 class="date"><em>2016-12-02</em></h4>
 
 
 
@@ -79,7 +79,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>This is a package dedicated to performing a least squares constrained optimization on a linear objective function. The functions minimize the same objective function as <code>lm</code>, applying a constraint on the beta parameters:</p>
 <p><span class="math display">\[S(\beta) = \sum_{i=1}^m \vert y_i - \sum_{j=1}^nX_{ij}\beta_j \vert^2 = \Vert y - X\beta\Vert^2\]</span></p>
 <p>And</p>
-<p><span class="math display">\[\hat{\beta} = arg_\beta min \ S(\beta)\]</span></p>
+<p><span class="math display">\[\hat{\beta} = arg_\beta min \ S(\beta)\]</span> under the constraints:</p>
+<p><span class="math display">\[lower \le \hat{\beta} \le upper \]</span></p>
 <p>The idea behind the package is to give the users a way to perform a constrained “linear regression” in an easy and intuitive way. The functions require a formula in the same syntax and format as <code>lm</code> which is a style most R users are familiar with.</p>
 <p>So far the package includes two functions in order to perform the constrained optimization:</p>
 <ul>
@@ -303,12 +304,12 @@ mymod</code></pre></div>
 <pre><code>## nlmrt class object: x 
 ## residual sumsquares =  1505  on  32 observations
 ##     after  7    Jacobian and  7 function evaluations
-##   name            coeff          SE       tstat      pval      gradient    JSingval   
-## param_X.Intercept.             2U           NA         NA         NA     0.03109        1724  
-## param_cyl             -2L           NA         NA         NA           0       225.9  
-## param_disp     0.0385865            NA         NA         NA       22571       48.42  
-## param_hp      0.00231996            NA         NA         NA        8807      0.3248  
-## param_qsec       1.18908            NA         NA         NA      -25.67   1.908e-14</code></pre>
+##                 name     coeff SEs tstat pval    gradient   JSingval
+## 1 param_X.Intercept.  2.000000  NA    NA   NA  3.1092e-02 1.7236e+03
+## 2          param_cyl -2.000000  NA    NA   NA  0.0000e+00 2.2588e+02
+## 3         param_disp  0.038586  NA    NA   NA  2.2571e+04 4.8424e+01
+## 4           param_hp  0.002320  NA    NA   NA  8.8068e+03 3.2482e-01
+## 5         param_qsec  1.189077  NA    NA   NA -2.5675e+01 1.9079e-14</code></pre>
 <p>Setting lower, upper and starting values:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#start values are outside boundaries</span>
 <span class="kw">colf_nlxb</span>(mpg ~<span class="st"> </span>cyl +<span class="st"> </span>disp +<span class="st"> </span>hp +<span class="st"> </span>qsec, mtcars, <span class="dt">lower =</span> <span class="kw">rep</span>(-<span class="dv">2</span>, <span class="dv">5</span>), <span class="dt">upper =</span> <span class="kw">rep</span>(<span class="fl">0.5</span>, <span class="dv">5</span>))</code></pre></div>
@@ -319,12 +320,12 @@ mymod</code></pre></div>
 <pre><code>## nlmrt class object: x 
 ## residual sumsquares =  2237.9  on  32 observations
 ##     after  5    Jacobian and  6 function evaluations
-##   name            coeff          SE       tstat      pval      gradient    JSingval   
-## param_X.Intercept.           0.5U           NA         NA         NA           0        1721  
-## param_cyl            0.5U           NA         NA         NA           0       225.6  
-## param_disp     -0.025392            NA         NA         NA   2.004e-05    3.92e-14  
-## param_hp       0.0697104            NA         NA         NA   -1.28e-05           0  
-## param_qsec           0.5U           NA         NA         NA           0           0</code></pre>
+##                 name     coeff SEs tstat pval    gradient   JSingval
+## 1 param_X.Intercept.  0.500000  NA    NA   NA  0.0000e+00 1.7213e+03
+## 2          param_cyl  0.500000  NA    NA   NA  0.0000e+00 2.2559e+02
+## 3         param_disp -0.025392  NA    NA   NA  2.0037e-05 3.9200e-14
+## 4           param_hp  0.069710  NA    NA   NA -1.2805e-05 0.0000e+00
+## 5         param_qsec  0.500000  NA    NA   NA  0.0000e+00 0.0000e+00</code></pre>
 </div>
 <div id="alternative-ways-to-use-formula-similar-to-lm" class="section level4">
 <h4>Alternative ways to use formula, similar to <code>lm</code>:</h4>
@@ -333,61 +334,93 @@ mymod</code></pre></div>
 <pre><code>## nlmrt class object: x 
 ## residual sumsquares =  3149.5  on  32 observations
 ##     after  3    Jacobian and  4 function evaluations
-##   name            coeff          SE       tstat      pval      gradient    JSingval   
-## param_hp       -0.107466       0.04538     -2.368    0.02453   3.542e-05       914.1  
-## param_cyl        5.40364         1.139      4.743  4.806e-05  -1.411e-06       8.987</code></pre>
+##        name    coeff      SEs   tstat       pval    gradient JSingval
+## 1  param_hp -0.10747 0.045383 -2.3680 2.4529e-02  3.5416e-05 914.0685
+## 2 param_cyl  5.40364 1.139220  4.7433 4.8055e-05 -1.4114e-06   8.9873</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colf_nlxb</span>(mpg ~<span class="st"> </span>., mtcars)</code></pre></div>
 <pre><code>## nlmrt class object: x 
 ## residual sumsquares =  147.5  on  32 observations
 ##     after  2    Jacobian and  3 function evaluations
-##   name            coeff          SE       tstat      pval      gradient    JSingval   
-## param_X.Intercept.       12.0809         18.72     0.6454     0.5256   -0.002687        1724  
-## param_cyl      -0.106182         1.045    -0.1016       0.92   -0.006288       226.1  
-## param_disp     0.0134351       0.01786     0.7523     0.4602      0.5555        50.9  
-## param_hp       -0.021483       0.02177    -0.9869     0.3349   -0.007217       5.651  
-## param_drat      0.791165         1.635     0.4838     0.6335    0.000208       4.279  
-## param_wt        -3.72978         1.894     -1.969    0.06231   -0.008281        4.05  
-## param_qsec      0.830959        0.7308      1.137     0.2684     0.06451       1.624  
-## param_vs        0.310536         2.105     0.1476     0.8841  -1.193e-05       1.405  
-## param_am         2.52665         2.057      1.229     0.2328   3.127e-05       1.237  
-## param_gear      0.659013         1.493     0.4413     0.6635  -0.0004484       1.114  
-## param_carb     -0.196141        0.8288    -0.2367     0.8152    0.001945      0.1412</code></pre>
+##                  name     coeff       SEs    tstat     pval    gradient
+## 1  param_X.Intercept. 12.080869 18.717972  0.64542 0.525648 -2.6874e-03
+## 2           param_cyl -0.106182  1.045028 -0.10161 0.920033 -6.2879e-03
+## 3          param_disp  0.013435  0.017858  0.75235 0.460194  5.5551e-01
+## 4            param_hp -0.021483  0.021769 -0.98688 0.334938 -7.2165e-03
+## 5          param_drat  0.791165  1.635381  0.48378 0.633548  2.0801e-04
+## 6            param_wt -3.729778  1.894423 -1.96882 0.062312 -8.2814e-03
+## 7          param_qsec  0.830959  0.730848  1.13698 0.268355  6.4511e-02
+## 8            param_vs  0.310536  2.104518  0.14756 0.884100 -1.1932e-05
+## 9            param_am  2.526646  2.056660  1.22852 0.232843  3.1270e-05
+## 10         param_gear  0.659013  1.493267  0.44132 0.663490 -4.4844e-04
+## 11         param_carb -0.196141  0.828756 -0.23667 0.815207  1.9448e-03
+##      JSingval
+## 1  1724.34152
+## 2   226.12682
+## 3    50.89759
+## 4     5.65107
+## 5     4.27912
+## 6     4.05009
+## 7     1.62429
+## 8     1.40497
+## 9     1.23732
+## 10    1.11377
+## 11    0.14119</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colf_nlxb</span>(mpg ~<span class="st"> </span><span class="kw">I</span>(hp +<span class="st"> </span>cyl), mtcars)</code></pre></div>
 <pre><code>## nlmrt class object: x 
 ## residual sumsquares =  438.6  on  32 observations
 ##     after  3    Jacobian and  4 function evaluations
-##   name            coeff          SE       tstat      pval      gradient    JSingval   
-## param_X.Intercept.       30.3667         1.644      18.47          0  -2.861e-08       948.7  
-## param_I.hp...cyl.    -0.0672188      0.009803     -6.857  1.307e-07    4.66e-06       2.326</code></pre>
+##                 name     coeff       SEs   tstat      pval    gradient
+## 1 param_X.Intercept. 30.366699 1.6439622 18.4717 0.000e+00 -2.8608e-08
+## 2  param_I.hp...cyl. -0.067219 0.0098026 -6.8572 1.307e-07  4.6601e-06
+##   JSingval
+## 1 948.7026
+## 2   2.3258</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colf_nlxb</span>(mpg ~<span class="st"> </span>(hp +<span class="st"> </span>cyl +<span class="st"> </span>disp)^<span class="dv">3</span>, mtcars)</code></pre></div>
 <pre><code>## nlmrt class object: x 
 ## residual sumsquares =  6207826  on  32 observations
 ##     after  2    Jacobian and  3 function evaluations
-##   name            coeff          SE       tstat      pval      gradient    JSingval   
-## param_X.Intercept.      -25360.2          5433     -4.668  9.661e-05      -2.243     2366035  
-## param_hp         244.848         51.95      4.714  8.603e-05       822.4       21312  
-## param_cyl        4240.78         991.4      4.278  0.0002606       35.87        2294  
-## param_disp       183.856          38.7      4.751  7.822e-05        1051        1232  
-## param_hp.cyl      -35.5872          7.73     -4.604  0.0001137      -10075       59.65  
-## param_hp.disp      -1.98104        0.4075     -4.862  5.904e-05    -1091700        35.3  
-## param_cyl.disp      -26.2739         5.546     -4.738  8.089e-05      -15164       1.995  
-## param_hp.cyl.disp      0.262991       0.05378       4.89  5.495e-05    10169977     0.09218</code></pre>
+##                 name       coeff        SEs   tstat       pval    gradient
+## 1 param_X.Intercept. -2.5360e+04 5.4329e+03 -4.6679 9.6610e-05 -2.2429e+00
+## 2           param_hp  2.4485e+02 5.1945e+01  4.7136 8.6027e-05  8.2240e+02
+## 3          param_cyl  4.2408e+03 9.9135e+02  4.2778 2.6062e-04  3.5875e+01
+## 4         param_disp  1.8386e+02 3.8699e+01  4.7510 7.8223e-05  1.0508e+03
+## 5       param_hp.cyl -3.5587e+01 7.7299e+00 -4.6038 1.1372e-04 -1.0075e+04
+## 6      param_hp.disp -1.9810e+00 4.0748e-01 -4.8617 5.9040e-05 -1.0917e+06
+## 7     param_cyl.disp -2.6274e+01 5.5456e+00 -4.7378 8.0890e-05 -1.5164e+04
+## 8  param_hp.cyl.disp  2.6299e-01 5.3782e-02  4.8900 5.4952e-05  1.0170e+07
+##     JSingval
+## 1 2.3660e+06
+## 2 2.1312e+04
+## 3 2.2941e+03
+## 4 1.2322e+03
+## 5 5.9652e+01
+## 6 3.5301e+01
+## 7 1.9948e+00
+## 8 9.2185e-02</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colf_nlxb</span>(mpg ~<span class="st"> </span>hp:cyl, mtcars)</code></pre></div>
 <pre><code>## nlmrt class object: x 
 ## residual sumsquares =  407.2  on  32 observations
 ##     after  2    Jacobian and  3 function evaluations
-##   name            coeff          SE       tstat      pval      gradient    JSingval   
-## param_X.Intercept.       27.2664         1.182      23.07          0  -0.0004518        6823  
-## param_hp.cyl   -0.00713034     0.0009798     -7.277  4.203e-08      0.6283       3.118</code></pre>
+##                 name      coeff       SEs   tstat       pval    gradient
+## 1 param_X.Intercept. 27.2664037 1.1817113 23.0737 0.0000e+00 -0.00045181
+## 2       param_hp.cyl -0.0071303 0.0009798 -7.2774 4.2035e-08  0.62834774
+##    JSingval
+## 1 6822.6123
+## 2    3.1177</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">colf_nlxb</span>(mpg ~<span class="st"> </span>hp *<span class="st"> </span>cyl, mtcars)</code></pre></div>
 <pre><code>## nlmrt class object: x 
 ## residual sumsquares =  247.6  on  32 observations
 ##     after  3    Jacobian and  4 function evaluations
-##   name            coeff          SE       tstat      pval      gradient    JSingval   
-## param_X.Intercept.       50.7659         6.512      7.796  1.715e-08   0.0004441        6882  
-## param_hp       -0.170838        0.0691     -2.472    0.01977     -0.1207       155.2  
-## param_cyl        -4.1211        0.9882      -4.17  0.0002658   -0.002382       8.313  
-## param_hp.cyl     0.0197579      0.008811      2.242    0.03303      0.8746      0.4521</code></pre>
+##                 name     coeff       SEs   tstat       pval    gradient
+## 1 param_X.Intercept. 50.765907 6.5116862  7.7961 1.7145e-08  0.00044412
+## 2           param_hp -0.170838 0.0691016 -2.4723 1.9767e-02 -0.12074368
+## 3          param_cyl -4.121103 0.9882292 -4.1702 2.6582e-04 -0.00238224
+## 4       param_hp.cyl  0.019758 0.0088109  2.2424 3.3034e-02  0.87458854
+##     JSingval
+## 1 6881.82249
+## 2  155.24157
+## 3    8.31320
+## 4    0.45214</code></pre>
 </div>
 <div id="predict-and-rest-of-the-methods" class="section level4">
 <h4>Predict and rest of the methods</h4>
@@ -461,7 +494,15 @@ newdata2$cyl &lt;-<span class="st"> </span><span class="kw">as.character</span>(
 ## [1] 7
 ## 
 ## $feval
-## [1] 7</code></pre>
+## [1] 7
+## 
+## $data_frame_to_print
+##                 name     coeff SEs tstat pval    gradient   JSingval
+## 1 param_X.Intercept.  2.000000  NA    NA   NA  3.1092e-02 1.7236e+03
+## 2          param_cyl -2.000000  NA    NA   NA  0.0000e+00 2.2588e+02
+## 3         param_disp  0.038586  NA    NA   NA  2.2571e+04 4.8424e+01
+## 4           param_hp  0.002320  NA    NA   NA  8.8068e+03 3.2482e-01
+## 5         param_qsec  1.189077  NA    NA   NA -2.5675e+01 1.9079e-14</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(mymod)</code></pre></div>
 <pre><code>## param_X.Intercept.          param_cyl         param_disp 
 ##           2.000000          -2.000000           0.038586 
@@ -471,12 +512,12 @@ newdata2$cyl &lt;-<span class="st"> </span><span class="kw">as.character</span>(
 <pre><code>## nlmrt class object: x 
 ## residual sumsquares =  1505  on  32 observations
 ##     after  7    Jacobian and  7 function evaluations
-##   name            coeff          SE       tstat      pval      gradient    JSingval   
-## param_X.Intercept.             2U           NA         NA         NA     0.03109        1724  
-## param_cyl             -2L           NA         NA         NA           0       225.9  
-## param_disp     0.0385865            NA         NA         NA       22571       48.42  
-## param_hp      0.00231996            NA         NA         NA        8807      0.3248  
-## param_qsec       1.18908            NA         NA         NA      -25.67   1.908e-14</code></pre>
+##                 name     coeff SEs tstat pval    gradient   JSingval
+## 1 param_X.Intercept.  2.000000  NA    NA   NA  3.1092e-02 1.7236e+03
+## 2          param_cyl -2.000000  NA    NA   NA  0.0000e+00 2.2588e+02
+## 3         param_disp  0.038586  NA    NA   NA  2.2571e+04 4.8424e+01
+## 4           param_hp  0.002320  NA    NA   NA  8.8068e+03 3.2482e-01
+## 5         param_qsec  1.189077  NA    NA   NA -2.5675e+01 1.9079e-14</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">resid</span>(mymod)</code></pre></div>
 <pre><code>##           Mazda RX4       Mazda RX4 Wag          Datsun 710 
 ##            -4.99876            -4.33287            -2.28818 

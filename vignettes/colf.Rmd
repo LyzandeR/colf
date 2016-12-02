@@ -20,7 +20,9 @@ $$S(\beta) = \sum_{i=1}^m \vert y_i - \sum_{j=1}^nX_{ij}\beta_j \vert^2 = \Vert 
 And 
 
 $$\hat{\beta} = arg_\beta min \ S(\beta)$$
+under the constraints:
 
+$$lower \le \hat{\beta} \le upper $$
 
 The idea behind the package is to give the users a way to perform a constrained "linear regression"
 in an easy and intuitive way. The functions require a formula in the same syntax and format as `lm` 
@@ -225,7 +227,7 @@ predict(mymod, newdata2)
 Rest of methods provided:
 
 Please make sure you read the section about the interpretation of the p-values at `colf_nls` when
-running a constrained regression. The same principles described there hold for `colf_nlxb`.
+running a constrained regression. The same principles described there hold for `colf_nlxb`. 
 
 ```{R}
 summary(mymod)
