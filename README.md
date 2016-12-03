@@ -1,5 +1,9 @@
 # colf
 
+#### Released Version
+
+[![CRAN version](http://www.r-pkg.org/badges/version/colf)](https://cran.r-project.org/package=colf)
+
 #### Build Status
 
 [![Travis-CI Build Status](https://travis-ci.org/LyzandeR/colf.svg?branch=master)](https://travis-ci.org/LyzandeR/colf)
@@ -10,6 +14,14 @@ A package to perform a least squares constrained optimization on a linear object
 most R users are familiar with.
 
 ## Installation
+
+To install the latest released version from CRAN you just need to run on your console:
+
+```r
+install.packages('colf')
+```
+
+To install the development version you need to have the `devtools` package installed. To install devtools type in your console: `install.packages('devtools')`.
 
 Then to install colf run the following on your console:
 
@@ -30,4 +42,6 @@ you can see a first example of how to run a constrained optimization on a linear
 
 ## Links - Cran / Tutorial / Examples
 
-Will be filled in soon
+To read the tutorial and documentation for colf please see the [vignette](https://cran.r-project.org/web/packages/colf/vignettes/colf.html).
+
+To see the released version you can visit [CRAN](https://cran.r-project.org/package=colf).
