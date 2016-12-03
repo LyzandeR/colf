@@ -7,3 +7,19 @@
 ## R CMD check results
 There were no ERRORs, WARNINGs or NOTEs
 
+## Submitting after Uwe's comments
+
+Thanks, we see:
+
+Possibly mis-spelled words in DESCRIPTION:
+  lm (13:82)
+
+Please write lm().
+
+
+The Description field should not start with the package name,
+  'This package' or similar.
+
+Just start "Performs .....". 
+
+Fixed both.
