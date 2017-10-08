@@ -9,8 +9,9 @@ Authors@R: person("Theo",
 URL: https://github.com/LyzandeR/colf                
 BugReports: https://github.com/LyzandeR/colf/issues
 Depends: R (>= 3.2.0),
-         nlmrt,
-         stats
+         nlsr,
+         stats,
+         utils
 Description: Performs least squares constrained optimization on a linear objective function. It contains
     a number of algorithms to choose from and offers a formula syntax similar to lm().
 License: MIT + file LICENSE

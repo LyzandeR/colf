@@ -79,7 +79,7 @@
 #' #the two next for the dummy variables constructed from Species. 
 #' colf_nlxb(Sepal.Length ~ Sepal.Width + Species, iris, lower = rep(0.5, 4))
 #' 
-#' @seealso \link[nlmrt]{nlxb}
+#' @seealso \link[nlsr]{nlxb}
 #'
 #' @export
 colf_nlxb <- function(formula, data, start = NULL, trace = FALSE, lower = -Inf, upper = Inf,
@@ -103,15 +103,16 @@ colf_nlxb <- function(formula, data, start = NULL, trace = FALSE, lower = -Inf, 
  }
  
  #run model
- nlxb_mod <- nlxb(model_ingredients$model_formula, 
-                  data = model_ingredients$model_data, 
-                  start = start,
-                  trace = trace,
-                  lower = lower,
-                  upper = upper,
-                  masked = masked,
-                  control = control,
-                  ...)
+ dump <- utils::capture.output({
+  nlxb_mod <- nlxb(model_ingredients$model_formula, 
+                   data = model_ingredients$model_data, 
+                   start = start,
+                   trace = trace,
+                   lower = lower,
+                   upper = upper,
+                   masked = masked,
+                   control = control,
+                   ...)})
  
  #include initial formula in the output
  nlxb_mod$formula <- formula
@@ -120,7 +121,7 @@ colf_nlxb <- function(formula, data, start = NULL, trace = FALSE, lower = -Inf, 
  nlxb_mod$model_data <- data
  
  #add class
- class(nlxb_mod) <- c('colf_nlxb', 'nlmrt')
+ class(nlxb_mod) <- c('colf_nlxb', 'nlsr')
  
  #return
  nlxb_mod

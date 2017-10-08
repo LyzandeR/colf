@@ -93,6 +93,6 @@ colf_nlxb(Sepal.Length ~ Sepal.Width + Species, iris, lower = rep(0.5, 4))
 
 }
 \seealso{
-\link[nlmrt]{nlxb}
+\link[nlsr]{nlxb}
 }
 

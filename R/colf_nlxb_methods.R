@@ -255,7 +255,7 @@ print.colf_nlxb <- function(x, ...) {
  
  xx <- summary(x)
  with(xx, {
-  cat("nlmrt class object:", resname, "\n")
+  cat("nlsr class object:", resname, "\n")
   pname <- names(coeff)
   npar <- length(coeff)
   cat("residual sumsquares = ", ssquares, " on ", nobs, 

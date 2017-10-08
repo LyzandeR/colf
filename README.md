@@ -42,6 +42,6 @@ you can see a first example of how to run a constrained optimization on a linear
 
 ## Links - Cran / Tutorial / Examples
 
-To read the tutorial and documentation for colf please see the [vignette](https://cran.r-project.org/web/packages/colf/vignettes/colf.html).
+To read the tutorial and documentation for colf please see the [vignette](https://cran.r-project.org/package=colf/vignettes/colf.html).
 
 To see the released version you can visit [CRAN](https://cran.r-project.org/package=colf).

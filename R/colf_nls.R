@@ -44,7 +44,7 @@
 #' 
 #' @seealso \link[stats]{nls}, \link[stats]{nls.control}
 #'
-#' @import stats nlmrt
+#' @import stats nlsr
 #' @export
 colf_nls <- function(formula, data, start = NULL, trace = FALSE,
                      control = NULL, na.action = c('na.omit', 'na.fail', 'na.exclude'), 
