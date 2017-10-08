@@ -32,7 +32,7 @@ So far the package includes two functions in order to perform the constrained op
   
 * `colf_nls` - uses the port algorithm which comes from the `stats::nls` function.
 * `colf_nlxb` - uses Nash's variant of Marquardt nonlinear least squares solution which comes from 
-  the `nlmrt::nlxb` function.
+  the `nlsr::nlxb` function.
 
 You can find more details about the two algorithms if you have a look at `?nls` and `?nlxb` 
 respectively.
